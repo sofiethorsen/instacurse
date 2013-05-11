@@ -3,8 +3,11 @@ import sys
 import curses
 
 import gevent
+import gevent.monkey
 
 from image import CurseImage
+
+gevent.monkey.patch_all(thread=False)
 
 def main():
     Application().run()
@@ -19,25 +22,28 @@ class Application(object):
             sys.stdout = sys.__stdout__
 
     def _run(self, screen):
-        page = WelcomePage(screen)
+        curses.curs_set(0)
+        curses.mousemask(1)
 
-        self._main_loop(page)
+        screen.nodelay(1)
 
-    def _main_loop(self, page):
+        print curses.can_change_color()
+
+        page = WelcomePage()
+
+        self._main_loop(screen, page)
+
+    def _main_loop(self, screen, page):
         while page:
-            page = page.run()
+            screen.clear()
+            screen.refresh()
+            page = page.run(screen)
 
 class Page(object):
-    def __init__(self, parent):
-        self.screen = parent.screen
+    pass
 
 class WelcomePage(Page):
-    def __init__(self, screen):
-        self.screen = screen
-
-    def run(self):
-        screen = self.screen
-
+    def run(self, screen):
         logo = CurseImage.from_file('extras/logo.txt')
 
         height, width = screen.getmaxyx()
@@ -51,7 +57,16 @@ class WelcomePage(Page):
 
         screen.refresh()
 
-        _getch(self.screen)
+        _getch(screen)
+
+        return PopularPage()
+
+class PopularPage(Page):
+    def run(self, screen):
+
+        while True:
+            c = _getch(screen)
+
 
 def addstr_centered(screen, y, text):
     height, width = screen.getmaxyx()
@@ -64,5 +79,3 @@ def _getch(screen):
 
 if __name__ == '__main__':
     main()
-
-
