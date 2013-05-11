@@ -42,15 +42,21 @@ class WelcomePage(Page):
 
         height, width = screen.getmaxyx()
         x = width / 2 - logo.width / 2
-        start_y = height / 2 - logo.height / 2
+        start_y = height / 2 - logo.height / 2 - 1
 
         for y, row in enumerate(logo.data, start=start_y):
             screen.addstr(y, x, row)
 
+        addstr_centered(screen, start_y + logo.height + 1, "PRESS ANY KEY")
+
         screen.refresh()
 
-        while True:
-            c = _getch(self.screen)
+        _getch(self.screen)
+
+def addstr_centered(screen, y, text):
+    height, width = screen.getmaxyx()
+    x = width / 2 - len(text) / 2
+    screen.addstr(y, x, text)
 
 def _getch(screen):
     gevent.socket.wait_read(sys.stdin.fileno())
