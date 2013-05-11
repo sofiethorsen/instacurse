@@ -127,8 +127,18 @@ class ImagePage(AsyncPage):
         screen.refresh()
 
     def display_text(self, screen, offset_y, image):
+        screen_height, screen_width = screen.getmaxyx()
+        width = screen_width - self.spacing
         x = self.spacing / 2
-        screen.addstr(offset_y, x, image.text)
+        y = offset_y
+        text = image.text
+        while True:
+            part = text[:width]
+            text = text[width:]
+            if y >= screen_height or not part:
+                break
+            screen.addstr(y, x, part)
+            y += 1
 
 class LoadingPage(Page):
     def __init__(self, page):
