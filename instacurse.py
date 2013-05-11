@@ -92,7 +92,7 @@ class ImagesPage(AsyncPage):
     def run(self, screen):
         if self.current_image >= len(self.images):
             # Load more images
-            return LoadingPage(ImagePage())
+            return LoadingPage(ImagesPage())
         else:
             image = self.images[self.current_image]
             self.current_image += 1
@@ -123,7 +123,7 @@ class ImagePage(AsyncPage):
         height = width / 2
 
         ascii_image.draw(screen, 0, self.spacing / 2)
-        self.display_text(screen, ascii_image.height, image)
+        #self.display_text(screen, ascii_image.height, image)
         screen.refresh()
 
     def display_text(self, screen, offset_y, image):

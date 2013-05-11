@@ -17,7 +17,7 @@ from bisect import bisect
 
 greyscale = [
     " ",
-    " ",
+    ".",
     ".,-",
     "_ivc=!/|\\~",
     "gjez2]/(YL)t[+T7Vf",
