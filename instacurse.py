@@ -46,20 +46,33 @@ class WelcomePage(Page):
     def run(self, screen):
         logo = CurseImage.from_file('extras/logo.txt')
 
-        height, width = screen.getmaxyx()
-        x = width / 2 - logo.width / 2
-        start_y = height / 2 - logo.height / 2 - 1
-
-        for y, row in enumerate(logo.data, start=start_y):
-            screen.addstr(y, x, row)
-
-        addstr_centered(screen, start_y + logo.height + 1, "PRESS ANY KEY")
-
-        screen.refresh()
+        self.animate_logo(screen, logo)
 
         _getch(screen)
 
         return PopularPage()
+
+    def animate_logo(self, screen, logo):
+        height, width = screen.getmaxyx()
+
+        x = width / 2 - logo.width / 2
+        y_center =  height / 2 - logo.height / 2 - 1
+        y_start = 0
+
+        while y_start < y_center:
+            screen.clear()
+
+            for y, row in enumerate(logo.data, start=y_start):
+                screen.addstr(y, x, row)
+
+            y_start += 1
+            screen.refresh()
+            gevent.sleep(seconds=0.05)
+
+        addstr_centered(screen, y_center + logo.height + 1, "PRESS ANY KEY")
+
+        screen.refresh()
+
 
 class PopularPage(Page):
     def run(self, screen):
