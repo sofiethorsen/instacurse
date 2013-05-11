@@ -43,3 +43,6 @@ nosetests.xml
 
 # Virtualenv
 venv/
+
+# Instacurse
+log.txt
