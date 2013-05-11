@@ -4,6 +4,8 @@ import curses
 
 import gevent
 
+from image import CurseImage
+
 def main():
     Application().run()
 
@@ -17,16 +19,50 @@ class Application(object):
             sys.stdout = sys.__stdout__
 
     def _run(self, screen):
-        self._main_loop(screen)
+        page = WelcomePage(screen)
 
-    def _main_loop(self, screen):
-        while True:
-            c = self._getch(screen)
+        self._main_loop(page)
 
+    def _main_loop(self, page):
+        while page:
+            page = page.run()
 
-    def _getch(self, screen):
-        gevent.socket.wait_read(sys.stdin.fileno())
-        return screen.getch()
+class Page(object):
+    def __init__(self, parent):
+        self.screen = parent.screen
+
+class WelcomePage(Page):
+    def __init__(self, screen):
+        self.screen = screen
+
+    def run(self):
+        screen = self.screen
+
+        logo = CurseImage.from_file('extras/logo.txt')
+
+        height, width = screen.getmaxyx()
+        x = width / 2 - logo.width / 2
+        start_y = height / 2 - logo.height / 2 - 1
+
+        for y, row in enumerate(logo.data, start=start_y):
+            screen.addstr(y, x, row)
+
+        addstr_centered(screen, start_y + logo.height + 1, "PRESS ANY KEY")
+
+        screen.refresh()
+
+        _getch(self.screen)
+
+def addstr_centered(screen, y, text):
+    height, width = screen.getmaxyx()
+    x = width / 2 - len(text) / 2
+    screen.addstr(y, x, text)
+
+def _getch(screen):
+    gevent.socket.wait_read(sys.stdin.fileno())
+    return screen.getch()
 
 if __name__ == '__main__':
     main()
+
+
