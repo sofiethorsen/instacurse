@@ -21,8 +21,8 @@ class CurseImage(object):
     def draw(self, screen, offset_y, offset_x):
         height, width = screen.getmaxyx()
         for y, row in enumerate(self.data, start=offset_y):
-            if y >= height - 1:
-                break
+            if y >= height - 1 or y < 0:
+                continue
 
             if not self.color:
                 screen.addstr(y, offset_x, row)

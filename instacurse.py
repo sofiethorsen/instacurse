@@ -79,17 +79,30 @@ class WelcomePage(Page):
 class ImagesPage(Page):
     def __init__(self, images):
         self.images = images
+        self.offset = 0
 
     def run(self, screen):
         #gevent.spawn(self._fetch_images).join()
 
         height, width = screen.getmaxyx()
         image = process.get_image(self.images[0].low_res['url'], width, height)
-        image.draw(screen, 0, 0)
+        image.draw(screen, self.offset, 0)
         screen.refresh()
 
         while True:
             c = _getch(screen)
+
+            if c == curses.KEY_DOWN:
+                self.offset += 1
+                self.update(screen, image)
+            elif c == curses.KEY_UP:
+                self.offset -= 1
+                self.update(screen, image)
+
+    def update(self, screen, image):
+        screen.erase()
+        image.draw(screen, self.offset, 0)
+        screen.refresh()
 
 class LoadingPage(Page):
     def __init__(self, page_cls, fn):
