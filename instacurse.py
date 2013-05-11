@@ -1,6 +1,7 @@
 import sys
 
 import curses
+import colors
 
 import gevent
 import gevent.monkey
@@ -29,7 +30,7 @@ class Application(object):
 
         screen.nodelay(1)
 
-        print curses.can_change_color()
+        colors.init(screen)
 
         page = WelcomePage()
 
