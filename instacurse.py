@@ -8,6 +8,8 @@ import gevent
 import gevent.monkey
 
 from image import CurseImage
+from render import Renderer
+
 import instagram
 import process
 
@@ -80,28 +82,46 @@ class ImagesPage(Page):
     def __init__(self, images):
         self.images = images
         self.offset = 0
+        self.spacing = 10
 
     def run(self, screen):
         #gevent.spawn(self._fetch_images).join()
+        #renderer = Renderer(screen, self.offset, self.spacing, self.images)
 
         height, width = screen.getmaxyx()
-        image = process.get_image(self.images[0].low_res['url'], width, width/2)
-        image.draw(screen, self.offset, 0)
+        width -= self.spacing
+        height = width/2
+
+        #renderer.render()
+
+        ascii_image = process.get_image(self.images[0].low_res['url'], width, height)
+        ascii_image.draw(screen, self.offset, self.spacing/2)
+        self.display_text(screen, ascii_image, self.images[0])
         screen.refresh()
 
         while True:
             c = _getch(screen)
 
             if c == curses.KEY_DOWN:
+                #renderer.offset += 1
                 self.offset += 1
-                self.update(screen, image)
+                #renderer.render()
+                self.update(screen, ascii_image, self.images[0])
             elif c == curses.KEY_UP:
+                #renderer.offset -= 1
                 self.offset -= 1
-                self.update(screen, image)
+                #renderer.render()
+                self.update(screen, ascii_image, self.images[0])
 
-    def update(self, screen, image):
+    def display_text(self, screen, ascii_image, image):
+        y = self.offset + ascii_image.height
+        x = self.spacing/2
+        screen.addstr(y, x, image.text)
+
+    def update(self, screen, ascii_image, image):
         screen.erase()
-        image.draw(screen, self.offset, 0)
+        ascii_image.draw(screen, self.offset, self.spacing/2)
+        self.display_text(screen, ascii_image, image)
         screen.refresh()
 
 class LoadingPage(Page):
