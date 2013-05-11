@@ -23,9 +23,11 @@ class Application(object):
         try:
             # TODO: Provide better logging mechanism
             sys.stdout = open('log.txt', 'a', 0)
+            sys.stderr = open('log.txt', 'a', 0)
             curses.wrapper(self._run)
         finally:
             sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
 
     def _run(self, screen):
         curses.curs_set(0)
@@ -41,7 +43,7 @@ class Application(object):
 
     def _main_loop(self, screen, page):
         while page:
-            screen.clear()
+            screen.erase()
             screen.refresh()
             page = page.run(screen)
 
@@ -146,6 +148,7 @@ class LoadingPage(Page):
         self.running = True
 
     def run(self, screen):
+        self.screen = screen
         gevent.spawn(self.page.fetch, screen).link(self._load_completed)
 
         logo = CurseImage.from_file('extras/loading.txt')
@@ -176,7 +179,10 @@ class LoadingPage(Page):
         return self.page
 
     def _load_completed(self, greenlet):
-        self.running = False
+        if not greenlet.exception:
+            self.running = False
+        else:
+            gevent.spawn(self.page.fetch, self.screen).link(self._load_completed)
 
 def addstr_centered(screen, y, text):
     height, width = screen.getmaxyx()
