@@ -14,7 +14,7 @@ def render(image, size):
     size should be a tuple of (x,y)
     """
     screen = aalib.AsciiScreen(width=size[0], height=size[1])
-    i = image.convert('L').resize(screen.virtual_size)
+    i = image.convert('L').resize(size)
     screen.put_image((0, 0), i)
     print screen.render()
 
