@@ -4,6 +4,8 @@ import curses
 
 import gevent
 
+from image import CurseImage
+
 def main():
     Application().run()
 
@@ -17,7 +19,7 @@ class Application(object):
             sys.stdout = sys.__stdout__
 
     def _run(self, screen):
-        page = LoginPage(screen)
+        page = WelcomePage(screen)
 
         self._main_loop(page)
 
@@ -29,11 +31,24 @@ class Page(object):
     def __init__(self, parent):
         self.screen = parent.screen
 
-class LoginPage(Page):
+class WelcomePage(Page):
     def __init__(self, screen):
         self.screen = screen
 
     def run(self):
+        screen = self.screen
+
+        logo = CurseImage.from_file('extras/logo.txt')
+
+        height, width = screen.getmaxyx()
+        x = width / 2 - logo.width / 2
+        start_y = height / 2 - logo.height / 2
+
+        for y, row in enumerate(logo.data, start=start_y):
+            screen.addstr(y, x, row)
+
+        screen.refresh()
+
         while True:
             c = _getch(self.screen)
 
