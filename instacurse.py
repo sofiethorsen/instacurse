@@ -1,5 +1,4 @@
 import sys
-import math
 
 import curses
 import colors
@@ -8,7 +7,6 @@ import gevent
 import gevent.monkey
 
 from image import CurseImage
-from render import Renderer
 
 import instagram
 import process
@@ -125,7 +123,7 @@ class ImagePage(AsyncPage):
         height = width / 2
 
         ascii_image.draw(screen, 0, self.spacing / 2)
-        #self.display_text(screen, ascii_image.height, image)
+        self.display_text(screen, ascii_image.height, image)
         screen.refresh()
 
     def display_text(self, screen, offset_y, image):
