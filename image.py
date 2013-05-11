@@ -8,3 +8,11 @@ class CurseImage(object):
         self.data = data
         self.width = max((len(row) for row in data))
         self.height = len(data)
+
+    def draw(self, screen, y, x):
+        height, width = screen.getmaxyx()
+        for y, row in enumerate(self.data, start=y):
+            if y >= height - 1:
+                break
+
+            screen.addstr(y, x, row)

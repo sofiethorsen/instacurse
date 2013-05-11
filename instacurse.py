@@ -64,8 +64,7 @@ class WelcomePage(Page):
         while y_start < y_center:
             screen.clear()
 
-            for y, row in enumerate(logo.data, start=y_start):
-                screen.addstr(y, x, row)
+            logo.draw(screen, y_start, x)
 
             y_start += 1
             screen.refresh()
@@ -82,9 +81,7 @@ class PopularPage(Page):
 
         height, width = screen.getmaxyx()
         image = process.get_image(self.images[0].low_res['url'], width, height)
-        for y, row in enumerate(image.data):
-            if y < height - 1:
-                screen.addstr(y, 0, row)
+        image.draw(screen, 0, 0)
         screen.refresh()
 
         while True:
