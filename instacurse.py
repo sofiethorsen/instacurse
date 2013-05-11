@@ -6,6 +6,8 @@ import gevent
 import gevent.monkey
 
 from image import CurseImage
+import instagram
+import process
 
 gevent.monkey.patch_all(thread=False)
 
@@ -76,9 +78,20 @@ class WelcomePage(Page):
 
 class PopularPage(Page):
     def run(self, screen):
+        gevent.spawn(self._fetch_images).join()
+
+        height, width = screen.getmaxyx()
+        image = process.get_image(self.images[0].low_res['url'], width, height)
+        for y, row in enumerate(image.data):
+            if y < height - 1:
+                screen.addstr(y, 0, row)
+        screen.refresh()
 
         while True:
             c = _getch(screen)
+
+    def _fetch_images(self):
+        self.images = instagram.popular()
 
 
 def addstr_centered(screen, y, text):
