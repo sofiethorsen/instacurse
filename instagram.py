@@ -47,5 +47,16 @@ class InstagramPicture(object):
             elif key == 'standard_resolution':
                 self.standard_res = value
 
+    def get_url(self, width, height):
+        """ Return the largest image which is closest to
+        the specified width/height """
+        diff, url = 1000, self.standard_res['url']
+        for image in self.images:
+            if width < image['width']:
+                tmp = image['width'] - width
+                if tmp < diff:
+                    url, diff = image['url'], tmp
+        return url
+
     def __repr__(self):
         return '<{} {}>'.format(self.username, self.text[:10])
