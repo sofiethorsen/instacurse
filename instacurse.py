@@ -1,4 +1,5 @@
 import sys
+import math
 
 import curses
 import colors
@@ -59,15 +60,14 @@ class WelcomePage(Page):
         height, width = screen.getmaxyx()
 
         x = width / 2 - logo.width / 2
-        y_center =  height / 2 - logo.height / 2 - 1
+        y_center = height / 2 - logo.height / 2 - 1
         y_start = 0
 
-        while y_start < y_center:
-            screen.clear()
+        for y in range(y_start, y_center):
+            screen.erase()
 
-            logo.draw(screen, y_start, x)
+            logo.draw(screen, y, x)
 
-            y_start += 1
             screen.refresh()
             gevent.sleep(seconds=0.05)
 
