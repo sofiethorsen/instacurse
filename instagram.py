@@ -4,9 +4,21 @@ import string
 _BASE_URL = 'https://api.instagram.com/v1'
 _CLIENT_ID = 'e55279a2d0124296af2423a09d83c2c6'
 
-def request_images(path):
-    url = _BASE_URL + path
+ENDPOINTS = {
+    'popular': '/media/popular',
+    'location': '/media/search'
+}
+
+def popular():
+    url = _BASE_URL + ENDPOINTS['popular']
     return _parse_result(requests.get(url, params = {'client_id':_CLIENT_ID}).json())
+
+def location(lat, lng):
+    #hardcoded for Skeppsholmskyrkan
+    lat, lng = (59.326276,18.082176)
+
+    url = _BASE_URL + ENDPOINTS['location']
+    return _parse_result(requests.get(url, params = {'client_id':_CLIENT_ID, 'lat': lat, 'lng':lng}).json())
 
 def _parse_result(json):
     pictures = []
