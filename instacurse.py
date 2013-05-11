@@ -53,7 +53,7 @@ class WelcomePage(Page):
 
         _getch(screen)
 
-        return PopularPage()
+        return LoadingPage(ImagesPage, instagram.popular)
 
     def animate_logo(self, screen, logo):
         height, width = screen.getmaxyx()
@@ -76,9 +76,12 @@ class WelcomePage(Page):
         screen.refresh()
 
 
-class PopularPage(Page):
+class ImagesPage(Page):
+    def __init__(self, images):
+        self.images = images
+
     def run(self, screen):
-        gevent.spawn(self._fetch_images).join()
+        #gevent.spawn(self._fetch_images).join()
 
         height, width = screen.getmaxyx()
         image = process.get_image(self.images[0].low_res['url'], width, height)
@@ -88,9 +91,45 @@ class PopularPage(Page):
         while True:
             c = _getch(screen)
 
-    def _fetch_images(self):
-        self.images = instagram.popular()
+class LoadingPage(Page):
+    def __init__(self, page_cls, fn):
+        self.page_cls = page_cls
+        self.fn = fn
+        self.running = True
 
+    def run(self, screen):
+        gevent.spawn(self.fn).link(self._load_completed)
+
+        logo = CurseImage.from_file('extras/loading.txt')
+
+        height, width = screen.getmaxyx()
+        x_center = width / 2 - logo.width / 2
+        y_center = height / 2 - logo.height / 2 - 1
+
+        while self.running:
+            for row in range(len(logo.data)):
+                if row % 2 == 0:
+                    for column in range(len(logo.data[row])):
+                        screen.addch(y_center, x_center + column, ' ')
+                        screen.refresh()
+                        gevent.sleep(seconds=0.05)
+
+                        for y, row in enumerate(logo.data, start=y_center):
+                            screen.addstr(y, x_center, row)
+                else:
+                    for column in reversed(range(len(logo.data[row]))):
+                        screen.addch(y_center + 1, x_center + column, ' ')
+                        screen.refresh()
+                        gevent.sleep(seconds=0.05)
+
+                        for y, row in enumerate(logo.data, start=y_center):
+                            screen.addstr(y, x_center, row)
+
+        return self.page_cls(self.arg)
+
+    def _load_completed(self, greenlet):
+        self.arg = greenlet.value
+        self.running = False
 
 def addstr_centered(screen, y, text):
     height, width = screen.getmaxyx()
