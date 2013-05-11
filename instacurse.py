@@ -17,16 +17,31 @@ class Application(object):
             sys.stdout = sys.__stdout__
 
     def _run(self, screen):
-        self._main_loop(screen)
+        page = LoginPage(screen)
 
-    def _main_loop(self, screen):
+        self._main_loop(page)
+
+    def _main_loop(self, page):
+        while page:
+            page = page.run()
+
+class Page(object):
+    def __init__(self, parent):
+        self.screen = parent.screen
+
+class LoginPage(Page):
+    def __init__(self, screen):
+        self.screen = screen
+
+    def run(self):
         while True:
-            c = self._getch(screen)
+            c = _getch(self.screen)
 
-
-    def _getch(self, screen):
-        gevent.socket.wait_read(sys.stdin.fileno())
-        return screen.getch()
+def _getch(screen):
+    gevent.socket.wait_read(sys.stdin.fileno())
+    return screen.getch()
 
 if __name__ == '__main__':
     main()
+
+
