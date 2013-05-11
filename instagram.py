@@ -1,4 +1,5 @@
 import requests
+import string
 
 _BASE_URL = 'https://api.instagram.com/v1'
 _CLIENT_ID = 'e55279a2d0124296af2423a09d83c2c6'
@@ -23,7 +24,8 @@ class InstagramPicture(object):
         self.text = ''
 
         if info:
-            self.text = info['text']
+            text = filter(lambda x: x in string.printable, info['text']).replace('\n', ' ')
+            self.text = text
 
         for key, value in images.iteritems():
             if key == 'low_resolution':
@@ -34,4 +36,4 @@ class InstagramPicture(object):
                 self.standard_res = value
 
     def __repr__(self):
-        return '<{} {}>'.format(self.username, self.text[:10].encode('utf-8'))
+        return '<{} {}>'.format(self.username, self.text[:10])
