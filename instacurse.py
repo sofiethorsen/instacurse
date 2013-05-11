@@ -30,7 +30,7 @@ class Application(object):
 
         screen.nodelay(1)
 
-        colors.init(screen)
+        colors.init()
 
         page = WelcomePage()
 

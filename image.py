@@ -8,6 +8,10 @@ class CurseImage(object):
         with open(filename, 'r') as file:
             return CurseImage(list(file))
 
+    @classmethod
+    def from_image(cls, image):
+        pass
+
     def __init__(self, data, color=None):
         self.data = data
         self.color = color
@@ -24,5 +28,5 @@ class CurseImage(object):
                 screen.addstr(y, offset_x, row)
             else:
                 for x, ch in enumerate(row, start=offset_x):
-                    attr = curses.color_pair(self.color[y][x] + 10)
+                    attr = curses.color_pair(self.color[y][x])
                     screen.addch(y, x, ch, attr)
