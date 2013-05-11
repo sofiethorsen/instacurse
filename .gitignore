@@ -3,6 +3,9 @@
 # C extensions
 *.so
 
+# OS X
+.DS_Store
+
 # Packages
 *.egg
 *.egg-info
@@ -33,3 +36,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# IntelliJ
+.idea/
+*.iml
+
+# Virtualenv
+venv/
