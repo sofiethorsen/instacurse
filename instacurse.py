@@ -85,7 +85,7 @@ class ImagesPage(Page):
         #gevent.spawn(self._fetch_images).join()
 
         height, width = screen.getmaxyx()
-        image = process.get_image(self.images[0].low_res['url'], width, height)
+        image = process.get_image(self.images[0].low_res['url'], width, width/2)
         image.draw(screen, self.offset, 0)
         screen.refresh()
 

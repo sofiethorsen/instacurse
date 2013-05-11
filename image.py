@@ -28,5 +28,5 @@ class CurseImage(object):
                 screen.addstr(y, offset_x, row)
             else:
                 for x, ch in enumerate(row, start=offset_x):
-                    attr = curses.color_pair(self.color[y][x])
+                    attr = curses.color_pair(self.color[y - offset_y][x - offset_x])
                     screen.addch(y, x, ch, attr)
