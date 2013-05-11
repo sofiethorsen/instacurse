@@ -56,7 +56,7 @@ class WelcomePage(Page):
 
         _getch(screen)
 
-        return LoadingPage(ImagesPage, instagram.popular)
+        return LoadingPage(ImagesPage())
 
     def animate_logo(self, screen, logo):
         height, width = screen.getmaxyx()
@@ -77,61 +77,66 @@ class WelcomePage(Page):
 
         screen.refresh()
 
+class AsyncPage(Page):
+    def fetch(self, screen):
+        pass
 
-class ImagesPage(Page):
-    def __init__(self, images):
-        self.images = images
-        self.offset = 0
+class ImagesPage(AsyncPage):
+    def __init__(self):
+        self.current_image = 0
         self.spacing = 10
 
-    def run(self, screen):
-        #gevent.spawn(self._fetch_images).join()
-        #renderer = Renderer(screen, self.offset, self.spacing, self.images)
+    def fetch(self, screen):
+        self.images = instagram.popular()
 
+    def run(self, screen):
+        if self.current_image >= len(self.images):
+            # Load more images
+            return LoadingPage(ImagePage())
+        else:
+            image = self.images[self.current_image]
+            self.current_image += 1
+            return LoadingPage(ImagePage(image, self))
+
+class ImagePage(AsyncPage):
+    def __init__(self, image, next_page):
+        self.image = image
+        self.next_page = next_page
+        self.spacing = 10
+
+    def fetch(self, screen):
         height, width = screen.getmaxyx()
         width -= self.spacing
-        height = width/2
+        height = width / 2
 
-        #renderer.render()
+        self.ascii_image = process.get_image(self.image.low_res['url'], width, height)
 
-        ascii_image = process.get_image(self.images[0].low_res['url'], width, height)
-        ascii_image.draw(screen, self.offset, self.spacing/2)
-        self.display_text(screen, ascii_image, self.images[0])
+    def run(self, screen):
+        self.display_image(screen, self.ascii_image, self.image)
+
+        _getch(screen)
+        return self.next_page
+
+    def display_image(self, screen, ascii_image, image):
+        height, width = screen.getmaxyx()
+        width -= self.spacing
+        height = width / 2
+
+        ascii_image.draw(screen, 0, self.spacing / 2)
+        self.display_text(screen, ascii_image.height, image)
         screen.refresh()
 
-        while True:
-            c = _getch(screen)
-
-            if c == curses.KEY_DOWN:
-                #renderer.offset += 1
-                self.offset += 1
-                #renderer.render()
-                self.update(screen, ascii_image, self.images[0])
-            elif c == curses.KEY_UP:
-                #renderer.offset -= 1
-                self.offset -= 1
-                #renderer.render()
-                self.update(screen, ascii_image, self.images[0])
-
-    def display_text(self, screen, ascii_image, image):
-        y = self.offset + ascii_image.height
-        x = self.spacing/2
-        screen.addstr(y, x, image.text)
-
-    def update(self, screen, ascii_image, image):
-        screen.erase()
-        ascii_image.draw(screen, self.offset, self.spacing/2)
-        self.display_text(screen, ascii_image, image)
-        screen.refresh()
+    def display_text(self, screen, offset_y, image):
+        x = self.spacing / 2
+        screen.addstr(offset_y, x, image.text)
 
 class LoadingPage(Page):
-    def __init__(self, page_cls, fn):
-        self.page_cls = page_cls
-        self.fn = fn
+    def __init__(self, page):
+        self.page = page
         self.running = True
 
     def run(self, screen):
-        gevent.spawn(self.fn).link(self._load_completed)
+        gevent.spawn(self.page.fetch, screen).link(self._load_completed)
 
         logo = CurseImage.from_file('extras/loading.txt')
 
@@ -158,10 +163,9 @@ class LoadingPage(Page):
                         for y, row in enumerate(logo.data, start=y_center):
                             screen.addstr(y, x_center, row)
 
-        return self.page_cls(self.arg)
+        return self.page
 
     def _load_completed(self, greenlet):
-        self.arg = greenlet.value
         self.running = False
 
 def addstr_centered(screen, y, text):
