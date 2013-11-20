@@ -33,9 +33,23 @@ Install the pip packages using:
     
     
 Running the client
-==========
+----------
 Just run: 
 
     python instacurse.py
    
 Note that you will need a terminal with 256 colors to be able to run the client.
+
+Screenshots
+----------
+
+![Startscreen](https://raw.github.com/sofiethorsen/instacurse/master/screenshots/img4.png)
+
+![Sample](https://raw.github.com/sofiethorsen/instacurse/master/screenshots/img1.png)
+
+![Sample](https://raw.github.com/sofiethorsen/instacurse/master/screenshots/img2.png)
+
+![Sample](https://raw.github.com/sofiethorsen/instacurse/master/screenshots/img3.png)
+
+![Sample](https://raw.github.com/sofiethorsen/instacurse/master/screenshots/img5.png)
+
