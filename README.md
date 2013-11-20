@@ -1,18 +1,41 @@
-instacurse
+instacurse - hipster client for Instagram
 ==========
 
-Hipster client for Instagram
+Installation
 ==========
 
-Notes on installation: 
-Before installing greenlet/gevent, make sure libevent is installed, using brew:
+libevent
+----------
+To be able to install greenlet/gevent with pip, libevent must be installed:
 
-brew install libevent
+    brew install libevent
 
-brew may put the installation on a funky place, if so run the following:
+The installation may be in the wrong place, if so export this:
 
-ln -s  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11 /usr/local/include/X11
+    export LDFLAGS=-L/usr/local/lib/
+    export CFLAGS=-I/usr/local/include/
+    
+libjpeg & PIL
+----------
+To be able to install PIL, libjpeg is required: 
 
-Also, before installing PIL you will need libjpeg, using brew: 
+    brew install libjpeg
 
-brew install libjpeg
+For the installation to work you may also have to symlink to the X11 lib:
+
+    ln -s  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11 /usr/local/include/X11
+
+requirements.txt
+----------
+Install the pip packages using:
+
+    pip install -r requirements.txt
+    
+    
+Running the client
+==========
+Just run: 
+
+    python instacurse.py
+   
+Note that you will need a terminal with 256 colors to be able to run the client.
