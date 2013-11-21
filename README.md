@@ -1,5 +1,7 @@
 instacurse - hipster client for Instagram
 ==========
+instacurse fetches images from the instagram toplist and converts them to ascii-art!
+It was hacked together during the STHLM startup hack 2013.
 
 Installation
 ==========
@@ -33,7 +35,7 @@ Install the pip packages using:
     
     
 Running the client
-----------
+==========
 Just run: 
 
     python instacurse.py
@@ -41,7 +43,7 @@ Just run:
 Note that you will need a terminal with 256 colors to be able to run the client.
 
 Screenshots
-----------
+==========
 
 ![Startscreen](https://raw.github.com/sofiethorsen/instacurse/master/screenshots/img4.png)
 
